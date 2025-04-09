@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <signal.h>
+#include <Windowos.h>
+#include <conio.h>
 
 //LC-3 Architecture - hardware components
 
@@ -68,7 +70,117 @@ int main(int argc, const char* argv[]){
 		}
 	}
 
+	//Setup
+	signal(SIGINT, handle_interrupt);
+	disable_intput_buffering();
 
+
+	//Sign extend
+	uint16_t sign-extend(uint16_t x, int bit_count){
+		if((x >> (bit_count -1)) & 1){
+			x != (0xFFFF << bit_count);
+		}
+	}
+
+	//Update flags
+	void update_flags(uint16_t){
+		if(reg[r] == 0){
+			reg[R_COND] = FL_ZRO;
+		} else if {
+			reg[R_COND] = FL_NEG;
+		} else {
+			reg[R_COND] = FL_POS;
+		}
+	}
+
+	//only one condition flag should be at any given time
+	//by default it is z flag
+	reg[R_COND] = FL_ZRO;
+
+	//set PC to starting position
+	//by default is it 0x3000
+	enum { PC_START = 0x3000};
+	reg[R_PC] = PC_START;	
+
+
+	int running = 1;
+	while(running){
+		uint16_t instr = mem_read(reg[R_PC]++);
+		uint16_t op = instr >> 12;
+
+	switch (op)
+        {
+            case OP_ADD:
+		  	{
+				// destination register
+				uint16_t r0 = (instr >> 9) & 0x7;
+				// first operarnd
+				uint16_t r1 = (instr >> 6) & 0x7;
+				// imediate mode or not 
+				uint16_t imm_flag = (instr >> 5) & 0x1;
+
+				if(imm_flag){
+					uint16_t imm5 = sign_extend(instr & 0x1F, 5);
+					reg[r0] = reg[r1] + imm5;
+				} else {
+					uint16_t r2 = instr & 0x7;
+					reg[r0] = reg[r1] + reg[r2];
+				}
+
+				update_flags(r0);
+			} 
+                break;
+            case OP_AND:
+        
+                break;
+            case OP_NOT:
+         
+                break;
+            case OP_BR:
+          
+                break;
+            case OP_JMP:
+           
+                break;
+            case OP_JSR:
+            
+                break;
+            case OP_LD:
+             
+                break;
+            case OP_LDI:
+              
+                break;
+            case OP_LDR:
+               
+                break;
+            case OP_LEA:
+                
+                break;
+            case OP_ST:
+
+                break;
+            case OP_STI:
+				
+                break;
+            case OP_STR:
+            	  
+                break;
+            case OP_TRAP:
+              
+                break;
+            case OP_RES:
+            case OP_RTI:
+            default:
+
+                break;
+        }
+	}	
+
+
+	
+	//Shutdown	
+	restore_input_buffering();
 	return 0;
 }
 
